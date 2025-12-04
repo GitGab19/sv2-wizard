@@ -43,13 +43,20 @@ export const SV2_APPS_RELEASE = {
   }
 } as const;
 
+// Detect if running on macOS
+export const isMacOS = (): boolean => {
+  const userAgent = navigator.userAgent.toLowerCase();
+  const platformStr = navigator.platform.toLowerCase();
+  return platformStr.includes('mac') || userAgent.includes('mac');
+};
+
 // Detect platform for download URLs
 export const getPlatform = (): string => {
   const userAgent = navigator.userAgent.toLowerCase();
   const platformStr = navigator.platform.toLowerCase();
   
   // Check if macOS
-  if (platformStr.includes('mac') || userAgent.includes('mac')) {
+  if (isMacOS()) {
     // macOS - check architecture
     if (userAgent.includes('arm64') || userAgent.includes('aarch64') || 
         platformStr.includes('arm') || navigator.userAgent.includes('ARM')) {
@@ -65,6 +72,19 @@ export const getPlatform = (): string => {
   }
   
   return SV2_APPS_RELEASE.platforms.linuxX64;
+};
+
+// Get the default socket path for a network based on detected OS
+// Returns absolute path with a placeholder for username
+export const getDefaultSocketPath = (network: BitcoinNetwork): string => {
+  const paths = NETWORK_SOCKET_PATHS[network];
+  const templatePath = isMacOS() ? paths.macPath : paths.path;
+  
+  // Replace ~ with absolute path placeholder
+  if (isMacOS()) {
+    return templatePath.replace('~', '/Users/<username>');
+  }
+  return templatePath.replace('~', '/home/<username>');
 };
 
 // Helper to get download URL for a tarball
