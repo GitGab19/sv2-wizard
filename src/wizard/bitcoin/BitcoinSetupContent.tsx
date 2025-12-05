@@ -1,23 +1,19 @@
 // Bitcoin Core setup content component
 
 import { useState } from "react";
-import { ArrowRight, Settings, Play, Download, HardDrive } from "lucide-react";
+import { ArrowRight, Settings, Play, Download, HardDrive, Search } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../components/ui/select";
-import type { BitcoinNetwork, OperatingSystem } from '../types';
-import { NETWORK_SOCKET_PATHS } from '../constants';
+import type { BitcoinNetwork } from '../types';
+import { NETWORK_SOCKET_PATHS, getDefaultSocketPath, isMacOS } from '../constants';
 import { CodeBlock, InfoCard } from '../ui';
 
-const formatAbsoluteExample = (path: string) =>
-  path.replace(/^~(?=\/)/, '/Users/your_username_here');
+// Get the find command to locate node.sock based on OS and network
+const getFindSocketCommand = (_network: BitcoinNetwork): string => {
+  // Search from home directory to handle custom datadir locations
+  return `find ~ -name "node.sock" -type s 2>/dev/null`;
+};
 
 export const BitcoinSetupContent = ({
   network, 
@@ -35,36 +31,21 @@ export const BitcoinSetupContent = ({
   showBitcoinConf?: boolean 
 }) => {
   const networkSocket = NETWORK_SOCKET_PATHS[network];
-  // Default to linux, but use saved value if exists (fallback to linux if windows was previously selected)
-  const [selectedOS, setSelectedOS] = useState<OperatingSystem>(
-    (data?.selectedOS && data.selectedOS !== 'windows') ? data.selectedOS : 'linux'
-  );
-  // Get the default path for the selected OS
-  const getDefaultPath = (os: OperatingSystem): string => {
-    switch (os) {
-      case 'macos':
-        return networkSocket.macPath;
-      case 'linux':
-      default:
-        return networkSocket.path;
-    }
-  };
-  // Start with empty value so placeholder shows default but user must enter path
+  // Empty by default, use saved value if exists
   const [socketPath, setSocketPath] = useState(data?.bitcoinSocketPath || "");
+  // Default path for placeholder (auto-detects OS)
+  const defaultSocketPath = getDefaultSocketPath(network);
   // Reset nodeStarted to false when component mounts to ensure confirmation button always shows
   const [nodeStarted, setNodeStarted] = useState(false);
   const startNodeCommand = network === "mainnet" 
     ? "./bitcoin-30.0/bin/bitcoin -m node -ipcbind=unix"
-    : network === "testnet4"
-    ? "./bitcoin-30.0/bin/bitcoin -m node -ipcbind=unix -testnet4"
-    : "./bitcoin-30.0/bin/bitcoin -m node -ipcbind=unix -signet";
+    : "./bitcoin-30.0/bin/bitcoin -m node -ipcbind=unix -testnet4";
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (updateData) {
       updateData({ 
-        bitcoinSocketPath: socketPath,
-        selectedOS: selectedOS
+        bitcoinSocketPath: socketPath
       });
     }
     if (onContinue) {
@@ -74,12 +55,6 @@ export const BitcoinSetupContent = ({
 
   return (
     <div className="space-y-6">
-      {network === "signet" && (
-        <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 p-4 text-sm text-yellow-100">
-          Signet support is being finalized. Expect limited functionality while integration work completes.
-        </div>
-      )}
-
       <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
         <h3 className="text-primary font-semibold flex items-center gap-2 mb-2">
           <HardDrive className="w-4 h-4" /> Bitcoin Core Setup Required
@@ -141,20 +116,11 @@ export const BitcoinSetupContent = ({
           <div className="space-y-3">
             <div>
               <span className="text-xs uppercase tracking-widest text-muted-foreground block mb-2">bitcoin.conf location</span>
-              <div className="space-y-2">
-                <div>
-                  <span className="text-xs text-muted-foreground block mb-1">Linux / Unix</span>
-                  <code className="block bg-black/30 px-3 py-2 rounded text-sm font-mono text-primary/90">
-                    ~/.bitcoin/bitcoin.conf
-                  </code>
-                </div>
-                <div>
-                  <span className="text-xs text-muted-foreground block mb-1">macOS</span>
-                  <code className="block bg-black/30 px-3 py-2 rounded text-sm font-mono text-primary/90">
-                    ~/Library/Application Support/Bitcoin/bitcoin.conf
-                  </code>
-                </div>
-              </div>
+              <code className="block bg-black/30 px-3 py-2 rounded text-sm font-mono text-primary/90">
+                {isMacOS() 
+                  ? "~/Library/Application Support/Bitcoin/bitcoin.conf"
+                  : "~/.bitcoin/bitcoin.conf"}
+              </code>
             </div>
             <div>
               <span className="text-xs uppercase tracking-widest text-muted-foreground block mb-2">Required Configuration</span>
@@ -220,48 +186,35 @@ rpcallowip=0.0.0.0/0`}
             Now that your node is running, find the socket file for <strong>{networkSocket.label}</strong>:
           </p>
 
+          <div className="mb-6 space-y-3">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Search className="w-4 h-4 text-primary" />
+              <span>Run this command in your terminal to find the socket path:</span>
+            </div>
+            <CodeBlock 
+              label="Find socket command" 
+              code={getFindSocketCommand(network)} 
+            />
+            <p className="text-xs text-muted-foreground">
+              Copy the output path and paste it below. If no result appears, ensure your node is running with <code className="text-primary">-ipcbind=unix</code>.
+            </p>
+          </div>
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="osSelect" className="text-white font-medium">
-                Operating System
-              </Label>
-              <Select value={selectedOS} onValueChange={(value) => {
-                setSelectedOS(value as OperatingSystem);
-              }}>
-                <SelectTrigger id="osSelect" className="bg-black/30 border-2 border-white/30 text-white focus:border-primary focus:ring-2 focus:ring-primary/50 hover:border-white/50 hover:bg-black/40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-black/90 border-white/30">
-                  <SelectItem value="linux" className="text-white focus:bg-white/20">Linux / Unix</SelectItem>
-                  <SelectItem value="macos" className="text-white focus:bg-white/20">macOS</SelectItem>
-                </SelectContent>
-              </Select>
-              <div className="mt-2">
-                <span className="text-xs uppercase tracking-widest text-muted-foreground block mb-1">
-                  {selectedOS === 'macos' ? 'macOS' : 'Linux / Unix'} Default Path
-                </span>
-                <code className="block bg-black/30 px-3 py-2 rounded text-sm font-mono text-primary/90 break-all">
-                  {getDefaultPath(selectedOS)}
-                </code>
-              </div>
-              <p className="text-xs text-muted-foreground">
-                Select your operating system to see the default socket path for your system. You still need to confirm or adjust the value below—some nodes store the socket somewhere custom.
-              </p>
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="socketPath" className="text-white font-medium">
-                Bitcoin Socket ABSOLUTE Path <span className="text-primary">*</span>
+                Bitcoin Socket Absolute Path <span className="text-primary">*</span>
               </Label>
               <Input 
                 id="socketPath" 
-                placeholder={formatAbsoluteExample(getDefaultPath(selectedOS))}
+                placeholder={defaultSocketPath}
                 value={socketPath} 
                 onChange={(e) => setSocketPath(e.target.value)}
                 required
                 className="bg-white/5 border-2 border-white/30 font-mono text-sm text-white placeholder:text-muted-foreground/70 focus:border-primary focus:ring-2 focus:ring-primary/50 hover:border-white/50 hover:bg-white/10 transition-all cursor-text"
               />
               <p className="text-xs text-muted-foreground">
-                <strong className="text-white/80">Enter or modify</strong> the full path to your <code className="text-primary">node.sock</code> file. The field is pre-filled with the default for the selected OS, but keep typing if you already customized your node.
+                Enter the absolute path to your <code className="text-primary">node.sock</code> file.
               </p>
             </div>
             <div className="flex justify-end">

@@ -14,7 +14,6 @@ export interface PoolConfig {
   networks?: {
     mainnet?: Partial<PoolConfig>;
     testnet4?: Partial<PoolConfig>;
-    signet?: Partial<PoolConfig>;
   };
 }
 
@@ -27,7 +26,7 @@ export interface ConfigTemplateData {
   userIdentity?: string;
   
   // Network and connection
-  network?: 'mainnet' | 'testnet4' | 'signet';
+  network?: 'mainnet' | 'testnet4';
   socketPath?: string;
   
   // Pool configuration

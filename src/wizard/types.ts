@@ -1,6 +1,6 @@
 // Shared types for wizard components
 
-export type BitcoinNetwork = 'mainnet' | 'testnet4' | 'signet';
+export type BitcoinNetwork = 'mainnet' | 'testnet4';
 
 export interface NetworkSocketPath {
   label: string;

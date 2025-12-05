@@ -14,7 +14,7 @@
  * Available pools:
  * - SRI Community Pool: mainnet & testnet4
  * - Braiins Pool: mainnet (non-JD only)
- * - Demand Pool: mainnet (JD or non-JD)
+ * - DMND Pool: mainnet (JD or non-JD)
  */
 
 import { Wizard, WizardConfig } from "./components/ui/wizard-framework";
@@ -66,8 +66,7 @@ const POOL_CONNECTION_WIZARD_CONFIG: WizardConfig = {
       description: "Which network will your Bitcoin Node operate on?",
       options: [
         { id: 'opt_main', label: "Mainnet", subLabel: "Production Network", value: "mainnet", nextStepId: "bitcoin_guide_mainnet", icon: Globe },
-        { id: 'opt_test', label: "Testnet4", subLabel: "Testing Network", value: "testnet4", nextStepId: "bitcoin_guide_testnet", icon: Activity },
-        { id: 'opt_sig', label: "Signet", subLabel: "Developer Network", value: "signet", nextStepId: "bitcoin_guide_signet", icon: Terminal, warning: "Coming soon", disabled: true }
+        { id: 'opt_test', label: "Testnet4", subLabel: "Testing Network", value: "testnet4", nextStepId: "bitcoin_guide_testnet", icon: Activity }
       ]
     },
     bitcoin_guide_mainnet: { 
@@ -83,13 +82,6 @@ const POOL_CONNECTION_WIZARD_CONFIG: WizardConfig = {
       title: "Bitcoin Core Setup (Testnet4)", 
       nextStepId: 'select_pool_construct_testnet4',
       component: <BitcoinSetupContent network="testnet4" showBitcoinConf={false} />
-    },
-    bitcoin_guide_signet: { 
-      id: 'bitcoin_guide_signet', 
-      type: 'instruction', 
-      title: "Bitcoin Core Setup (Signet)", 
-      nextStepId: 'select_pool_construct_mainnet',
-      component: <BitcoinSetupContent network="signet" showBitcoinConf={false} />
     },
     select_pool_construct_mainnet: {
       id: 'select_pool_construct_mainnet',
@@ -107,20 +99,18 @@ const POOL_CONNECTION_WIZARD_CONFIG: WizardConfig = {
           iconUrl: getPoolConfig("community_sri")?.iconUrl,
           badge: "Testing",
           badgeColor: "blue",
-          warning: "Not for production use – rewards are not paid out."
+          warning: "Not for production use – any blocks found will be donated to the SRI project"
         },
         { 
           id: 'pool_demand', 
-          label: "DEMAND", 
-          subLabel: "Work in progress", 
+          label: "DMND",  
           value: "demand", 
           nextStepId: "jd_client_configuration", 
           icon: Zap,
           iconUrl: getPoolConfig("demand")?.iconUrl,
-          badge: "Soon",
-          badgeColor: "orange",
-          warning: "This option is coming soon.",
-          disabled: true
+          warning: "Pool for registered businesses only at the moment",
+          disabled: true,
+          url: "https://dmnd.work/"
         }
       ]
     },
@@ -140,7 +130,7 @@ const POOL_CONNECTION_WIZARD_CONFIG: WizardConfig = {
           iconUrl: getPoolConfig("community_sri")?.iconUrl,
           badge: "Testing",
           badgeColor: "blue",
-          warning: "Not for production use – rewards are not paid out."
+          warning: "Not for production use – any blocks found will be donated to the SRI project"
         }
       ]
     },
@@ -160,7 +150,7 @@ const POOL_CONNECTION_WIZARD_CONFIG: WizardConfig = {
           iconUrl: getPoolConfig("community_sri")?.iconUrl,
           badge: "Testing",
           badgeColor: "blue",
-          warning: "Not for production use – no share accounting / no payouts."
+          warning: "Not for production use – any blocks found will be donated to the SRI project."
         },
         { 
           id: 'pool_braiins', 
@@ -173,16 +163,14 @@ const POOL_CONNECTION_WIZARD_CONFIG: WizardConfig = {
         },
         { 
           id: 'pool_demand', 
-          label: "DEMAND", 
-          subLabel: "Work in progress", 
+          label: "DMND",
           value: "demand", 
           nextStepId: "translator_proxy_configuration", 
           icon: Zap,
           iconUrl: getPoolConfig("demand")?.iconUrl,
-          badge: "Soon",
-          badgeColor: "orange",
-          warning: "Coming soon.",
-          disabled: true
+          warning: "Pool for registered businesses only at the moment",
+          disabled: true,
+          url: "https://dmnd.work/"
         }
       ]
     },
@@ -199,9 +187,10 @@ const POOL_CONNECTION_WIZARD_CONFIG: WizardConfig = {
           value: "community_sri", 
           nextStepId: "translator_proxy_configuration", 
           icon: Globe,
+          iconUrl: getPoolConfig("community_sri")?.iconUrl,
           badge: "Testing",
           badgeColor: "blue",
-          warning: "Not for production use – no share accounting / no payouts."
+          warning: "Not for production use – any blocks found will be donated to the SRI project"
         }
       ]
     },

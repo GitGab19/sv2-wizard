@@ -23,8 +23,7 @@ export const DEFAULT_CONFIG_VALUES = {
   // RPC ports by network
   rpcPorts: {
     mainnet: 8332,
-    testnet4: 48332,
-    signet: 38332
+    testnet4: 48332
   },
   
   // Addresses
@@ -39,18 +38,17 @@ export const DEFAULT_CONFIG_VALUES = {
   // Address placeholders
   addressPlaceholders: {
     mainnet: "bc1q...",
-    testnet4: "tb1q...",
-    signet: "bc1q..."
+    testnet4: "tb1q..."
   }
 } as const;
 
 // Network-specific RPC ports
-export function getRpcPort(network: 'mainnet' | 'testnet4' | 'signet' = 'mainnet'): number {
+export function getRpcPort(network: 'mainnet' | 'testnet4' = 'mainnet'): number {
   return DEFAULT_CONFIG_VALUES.rpcPorts[network];
 }
 
 // Get address placeholder for network
-export function getAddressPlaceholder(network: 'mainnet' | 'testnet4' | 'signet' = 'mainnet'): string {
+export function getAddressPlaceholder(network: 'mainnet' | 'testnet4' = 'mainnet'): string {
   return DEFAULT_CONFIG_VALUES.addressPlaceholders[network];
 }
 

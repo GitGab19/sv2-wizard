@@ -12,9 +12,8 @@
  *   - Non-JD mode only (uses pool's templates)
  *   - Leading mining pool provider
  * 
- * - demand: Demand Pool (mainnet only)
+ * - demand: DMND Pool (mainnet only)
  *   - Supports both JD and non-JD modes
- *   - Work in progress
  */
 
 import type { PoolConfig } from './types';
@@ -34,15 +33,25 @@ export const POOLS: Record<string, PoolConfig> = {
   community_sri: {
     name: "Community SRI Pool",
     address: "75.119.150.111",
-    port: 34254,
+    port: 3333, // Default (mainnet), will be overridden by network-specific configs
     authorityPubkey: "9auqWEzQDVyd2oe1JVGFLMLHZtCo2FFqZwtKA5gd9xbuEu7PH72",
     aggregateChannels: false,
     jdsAddress: "75.119.150.111",
-    jdsPort: 34264,
-    iconUrl: "https://stratumprotocol.org/assets/sv2-logo.png"
+    jdsPort: 3334, // Default (mainnet), will be overridden by network-specific configs
+    iconUrl: "https://stratumprotocol.org/assets/sv2-logo.png",
+    networks: {
+      mainnet: {
+        port: 3333,
+        jdsPort: 3334,
+      },
+      testnet4: {
+        port: 43333,
+        jdsPort: 43334,
+      }
+    }
   },
   demand: {
-    name: "DEMAND",
+    name: "DMND",
     address: "127.0.0.1", // Placeholder - update when available
     port: 34254,
     authorityPubkey: "9auqWEzQDVyd2oe1JVGFLMLHZtCo2FFqZwtKA5gd9xbuEu7PH72", // Placeholder
@@ -53,7 +62,10 @@ export const POOLS: Record<string, PoolConfig> = {
   }
 };
 
-export function getPoolConfig(poolValue: string | undefined): PoolConfig | null {
+export function getPoolConfig(
+  poolValue: string | undefined,
+  network?: 'mainnet' | 'testnet4'
+): PoolConfig | null {
   if (!poolValue) return null;
   
   // Map pool values to config keys
@@ -64,6 +76,18 @@ export function getPoolConfig(poolValue: string | undefined): PoolConfig | null 
   };
   
   const poolKey = poolMap[poolValue];
-  return poolKey ? POOLS[poolKey] : null;
+  if (!poolKey || !POOLS[poolKey]) return null;
+  
+  const baseConfig = POOLS[poolKey];
+  
+  // If network is specified and pool has network-specific config, merge it
+  if (network && baseConfig.networks?.[network]) {
+    return {
+      ...baseConfig,
+      ...baseConfig.networks[network]
+    };
+  }
+  
+  return baseConfig;
 }
 
