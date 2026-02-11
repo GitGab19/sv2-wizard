@@ -5,7 +5,7 @@
     <a href="https://github.com/stratum-mining/sv2-wizard/blob/main/LICENSE.md"><img alt="MIT or Apache-2.0 Licensed" src="https://img.shields.io/badge/license-MIT%2FApache--2.0-blue.svg"/></a>
 </p>
 
-A standalone React component for guiding users through the deployment of SRI (Stratum V2 Reference Implementation) stack.
+A standalone React component for guiding users through the deployment of SRI (Stratum V2 Reference Implementation) stack. Its design tokens and styling are aligned with [stratumprotocol.org](https://stratumprotocol.org) for consistent branding when embedded in the Stratum V2 website or used in related tools.
 
 ## Features
 
@@ -16,6 +16,7 @@ A standalone React component for guiding users through the deployment of SRI (St
 - **Bitcoin Core Integration**: Guides users through Bitcoin Core node setup
 - **Configuration Generation**: Generates deployment configurations automatically
 - **Modular Architecture**: Well-organized, maintainable codebase with clear separation of concerns
+- **Design Alignment**: CSS variables and theme (light/dark) match stratumprotocol.org for a consistent look when embedded
 
 ## Installation
 
@@ -72,18 +73,30 @@ function App() {
 
 ## Styling
 
-This component uses Tailwind CSS and expects the following CSS variables to be defined in your theme:
+The wizard uses Tailwind CSS and design tokens aligned with [stratumprotocol.org](https://stratumprotocol.org). Define the following CSS variables (e.g. in `:root` and `.dark`) so the component renders correctly:
 
-- `--primary` - Primary color
-- `--primary-foreground` - Primary text color
-- `--muted` - Muted background color
-- `--muted-foreground` - Muted text color
-- `--card` - Card background color
-- `--card-foreground` - Card text color
-- `--border` - Border color
-- `--background` - Page background color
+**Core theme:**
 
-Make sure your Tailwind configuration includes these variables or the component may not display correctly.
+- `--background` – Page background
+- `--foreground` – Default text color
+- `--card` – Card background
+- `--card-foreground` – Card text color
+- `--primary` – Primary (e.g. cyan) for buttons and accents
+- `--primary-foreground` – Text on primary surfaces
+- `--muted` – Muted background
+- `--muted-foreground` – Muted text
+- `--accent` – Accent/hover background
+- `--border` – Border color
+- `--input` – Input border/background
+- `--ring` – Focus ring (often same as primary)
+
+**Semantic (optional, for status messages):**
+
+- `--success` / `--success-foreground`
+- `--info` / `--info-foreground`
+- `--warning` / `--warning-foreground`
+
+Use `class="dark"` on a parent (e.g. `<html>`) for dark mode. The demo app (`npm run demo`) shows a full setup with light/dark toggle and the same token values as stratumprotocol.org.
 
 ## Dependencies
 

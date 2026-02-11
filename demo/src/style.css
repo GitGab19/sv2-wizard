@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 /* ====================================
-   DESIGN TOKENS — Matching stratumprotocol.org
+   DESIGN TOKENS — Aligned with stratumprotocol.org
    ==================================== */
 
 :root {
-  /* Light Mode */
+  /* Light mode — Swiss style (matches stratumprotocol.org styles.css) */
   --background: 0 0% 100%;
   --foreground: 0 0% 9%;
   --card: 0 0% 100%;
   --card-foreground: 0 0% 9%;
-  --primary: 190 100% 45%;
+  --primary: 190 100% 45%; /* Cyan */
   --primary-foreground: 0 0% 100%;
   --muted: 240 4.8% 95.9%;
   --muted-foreground: 240 3.8% 46.1%;
@@ -21,7 +21,7 @@
   --input: 240 5.9% 90%;
   --ring: 190 100% 45%;
 
-  /* Semantic status */
+  /* Semantic status (wizard UI) */
   --success: 142 76% 36%;
   --success-foreground: 142 76% 20%;
   --info: 217 91% 60%;
@@ -29,16 +29,16 @@
   --warning: 38 92% 50%;
   --warning-foreground: 38 92% 25%;
 
-  font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color-scheme: light dark;
 }
 
 .dark {
-  --background: 0 0% 0%;
+  /* Dark mode — Stratum aesthetic (matches stratumprotocol.org styles.css) */
+  --background: 0 0% 0%; /* Pure black */
   --foreground: 0 0% 98%;
   --card: 0 0% 4%;
   --card-foreground: 0 0% 98%;
-  --primary: 190 100% 50%;
+  --primary: 190 100% 50%; /* Electric cyan */
   --primary-foreground: 0 0% 0%;
   --muted: 0 0% 10%;
   --muted-foreground: 0 0% 60%;
@@ -55,17 +55,26 @@
   --warning-foreground: 38 92% 85%;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   background-color: hsl(var(--background));
   color: hsl(var(--foreground));
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .demo-root {
@@ -77,10 +86,11 @@ body {
 }
 
 /* ====================================
-   THEME TOGGLE — Matching stratumprotocol.org
+   THEME TOGGLE — Aligned with stratumprotocol.org (PR 302)
    ==================================== */
 
 .theme-toggle {
+  position: relative;
   width: 2.5rem;
   height: 2.5rem;
   display: flex;

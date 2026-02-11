@@ -7,8 +7,9 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
+      /* Aligned with stratumprotocol.org */
       fontFamily: {
-        sans: ["'Inter'", "system-ui", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
+        sans: ["'Inter'", "-apple-system", "BlinkMacSystemFont", "sans-serif"],
         mono: ["'JetBrains Mono'", "monospace"],
       },
       colors: {
